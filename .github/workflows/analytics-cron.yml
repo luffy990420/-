@@ -1,0 +1,36 @@
+name: Analytics Cron
+
+on:
+  schedule:
+    # 每天 02:00 UTC 运行（如需改时间告诉我）
+    - cron: '0 2 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  run-analytics:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Run analytics collect script
+        env:
+          PROXY_URL: ${{ secrets.PROXY_URL }}
+          XHS_COOKIE: ${{ secrets.XHS_COOKIE }}
+          DOUYIN_COOKIE: ${{ secrets.DOUYIN_COOKIE }}
+          WEIBO_COOKIE: ${{ secrets.WEIBO_COOKIE }}
+          STORAGE_ACCESS_KEY: ${{ secrets.STORAGE_ACCESS_KEY }}
+          STORAGE_SECRET_KEY: ${{ secrets.STORAGE_SECRET_KEY }}
+        run: |
+          chmod +x feature/analytics-skeleton/analytics/run_collect.sh
+          ./feature/analytics-skeleton/analytics/run_collect.sh
