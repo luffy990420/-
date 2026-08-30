@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: yichong
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: yichong_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+  backend:
+    build: feature/backend-skeleton/backend
+    working_dir: /app
+    volumes:
+      - ./feature/backend-skeleton/backend:/app
+    command: node index.js
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgres://yichong:secret@db:5432/yichong_db
+volumes:
+  db_data: {}
